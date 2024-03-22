@@ -1,7 +1,7 @@
 const { Events } = require("discord.js");
 const { DateTime } = require("luxon");
 const client = require("../lib/db");
-const { getLevel, createUserDb } = require("../lib/user");
+const { getLevel, createUserDb, createChannelDb } = require("../lib/user");
 const { EmbedBuilder } = require("discord.js");
 
 const COOLDOWN_DURATION_HOURS = process.env.XP_COOLDOWN;
@@ -19,12 +19,8 @@ module.exports = {
       process.env.LEVELS_CHANNEL,
     );
     try {
-      let user = await client.user.findFirst({
-        where: { userId: message.author.id },
-      });
-      if (!user) {
-        user = createUserDb(message.author.id);
-      }
+      const channelXp = await createChannelDb(message.channel.id, 5);
+      const user = await createUserDb(message.author.id);
       if (
         (user.joinMessage == null || user.joinMessage == "") &&
         message.channelId == process.env.FIRST_MESSSAGE_CHANNEL
@@ -44,9 +40,13 @@ module.exports = {
           data: { joinMessageTwo: message.id },
         });
       }
+      console.log(channelXp.earnxp);
+      if (!channelXp.earnxp) {
+        return;
+      }
 
       if (user.lastUpdated == null) {
-        let level = getLevel(user.xp + 5);
+        let level = getLevel(user.xp + channelXp.xp);
         if (level != user.level) {
           const embed = new EmbedBuilder()
             .setTitle(`${message.author.username} Level Updated`)
@@ -54,7 +54,7 @@ module.exports = {
             .setDescription(
               `↪ User: <@${
                 message.author.id
-              }>\n↪ Level: **${level}**\n↪ XP: ${user.xp + 5}\n`,
+              }>\n↪ Level: **${level}**\n↪ XP: ${user.xp + channelXp.xp}\n`,
             )
             .setTimestamp();
           channel.send({ embeds: [embed] });
@@ -63,7 +63,7 @@ module.exports = {
         const f = await client.user.update({
           where: { id: user.id },
           data: {
-            xp: user.xp + 5,
+            xp: user.xp + channelXp.xp,
             level: level,
             lastUpdated: date.toMillis().toString(),
           },
@@ -73,7 +73,7 @@ module.exports = {
       const lastMessage = DateTime.fromMillis(parseInt(user.lastUpdated));
       const timeElapsed = date.diff(lastMessage, "milliseconds");
       if (timeElapsed > COOLDOWN_DURATION_MS) {
-        let level = getLevel(user.xp + 5);
+        let level = getLevel(user.xp + channelXp.xp);
         if (level != user.level) {
           const embed = new EmbedBuilder()
             .setTitle(`${message.author.username} Level Updated`)
@@ -81,7 +81,7 @@ module.exports = {
             .setDescription(
               `↪ User: <@${
                 message.author.id
-              }>\n↪ Level: **${level}**\n↪ XP: ${user.xp + 5}`,
+              }>\n↪ Level: **${level}**\n↪ XP: ${user.xp + channelXp.xp}`,
             )
             .setTimestamp()
             .setThumbnail(message.author.displayAvatarURL());
@@ -102,7 +102,7 @@ module.exports = {
         const f = await client.user.update({
           where: { id: user.id },
           data: {
-            xp: user.xp + 5,
+            xp: user.xp + channelXp.xp,
             level: level,
             lastUpdated: date.toMillis().toString(),
           },

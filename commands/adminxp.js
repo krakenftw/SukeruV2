@@ -2,11 +2,14 @@ const { SlashCommandBuilder } = require("discord.js");
 const client = require("../lib/db");
 const { createUserDb, getLevel } = require("../lib/user");
 const { EmbedBuilder } = require("discord.js");
+const { PermissionFlagsBits } = require("discord.js");
 
 module.exports = {
   data: new SlashCommandBuilder()
     .setName("adminxp")
     .setDescription("Manage/Reset XP!")
+    .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
+
     .addSubcommandGroup((subCommandGroup) =>
       subCommandGroup
         .setName("reset")
