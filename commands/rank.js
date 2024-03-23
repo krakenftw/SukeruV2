@@ -26,13 +26,14 @@ module.exports = {
     const userId = member.user.id;
     console.log(userId);
 
-    const user = await client.user.findFirst({
+    let user = await client.user.findFirst({
       where: { userId: userId },
     });
+    let usersData;
     if (!user) {
-      usersData = await createUserDb(userId);
+      user = await createUserDb(userId);
     }
-    const usersData = await client.user.findMany({
+    usersData = await client.user.findMany({
       orderBy: {
         xp: "desc",
       },
@@ -43,9 +44,15 @@ module.exports = {
       member.roles.cache.forEach((each) => {
         userRoles += `<@&${each.id}> `;
       });
+
       const createdTime = interaction.user.createdAt;
-      const joinedTime = DateTime.fromJSDate(user.joined);
-      const date = DateTime.fromJSDate(createdTime);
+      const createdTimeSeconds = DateTime.fromJSDate(createdTime).toSeconds();
+      const createdTimeDiscord = createdTimeSeconds.toString().split(".")[0];
+      const joinedTime = DateTime.fromJSDate(user.joined)
+        .toSeconds()
+        .toString()
+        .split(".")[0];
+
       let firstMessage;
       let secondMessage;
       if (user.joinMessage) {
@@ -65,7 +72,7 @@ module.exports = {
             user.level
           }**\n↪ Total XP : **${
             user.xp
-          }**\n↪ User Roles : ${userRoles}\n↪ Created At: ${date.toLocaleString()}\n↪ Joined Server: ${joinedTime.toLocaleString()}\n${
+          }**\n↪ User Roles : ${userRoles}\n↪ Created At: <t:${createdTimeDiscord}:D>\n↪ Joined Server: <t:${joinedTime}:D>\n${
             firstMessage ? hyperlink("📎 First Message", firstMessage) : ""
           } \n${
             secondMessage ? hyperlink("📎 Second Message", secondMessage) : ""

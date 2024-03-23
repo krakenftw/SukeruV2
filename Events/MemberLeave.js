@@ -2,13 +2,22 @@ const { Events } = require("discord.js");
 const { name } = require("./ready");
 const { EmbedBuilder } = require("discord.js");
 const client = require("../lib/db");
+const { DateTime } = require("luxon");
 
 module.exports = {
   name: Events.GuildMemberRemove,
   async execute(member) {
-    const createdTime = new Date(member.user.createdAt);
-    const joinedTime = new Date(member.joinedAt);
-    const currTime = new Date();
+    const createdTime = DateTime.fromJSDate(member.user.createdAt)
+      .toSeconds()
+      .toString()
+      .split(".")[0];
+
+    const joinedTime = DateTime.fromJSDate(member.joinedAt)
+      .toSeconds()
+      .toString()
+      .split(".")[0];
+
+    const currTime = DateTime.now().toSeconds().toString().split(".")[0];
     const channel = await member.guild.channels.cache.get(
       process.env.LEAVE_CHANNEL,
     );
@@ -26,11 +35,9 @@ module.exports = {
       }
       const embed = new EmbedBuilder()
         .setColor("#ff0000")
-        .setTitle(`Goodbye, ${member.user.tag}!`)
+        .setTitle(`Au revoir ! ${member.user.tag}!`)
         .setDescription(
-          `We will miss you.\nHope to see you again\n↪ User Name: <@${
-            member.user.id
-          }>\n↪ Created On: ${createdTime.toLocaleString()}\n↪ Joined On: ${joinedTime.toLocaleString()}\n↪ Leave Time: ${currTime.toLocaleString()}`,
+          `Vous nous manquerez.\nJ'espère vous revoir\n↪ Utilisateur: <@${member.user.id}>\n↪ Créer le: <t:${createdTime}:d>\n↪ Rejoint le: <t:${joinedTime}:d>\n↪ Leave Time: <t:${currTime}:d>`,
         )
         .setThumbnail(member.user.displayAvatarURL({ dynamic: true }))
         .setTimestamp();
