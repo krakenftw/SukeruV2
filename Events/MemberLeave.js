@@ -37,7 +37,7 @@ module.exports = {
         .setColor("#ff0000")
         .setTitle(`Au revoir ! ${member.user.tag}!`)
         .setDescription(
-          `Vous nous manquerez.\nJ'espère vous revoir\n↪ Utilisateur: <@${member.user.id}>\n↪ Créer le: <t:${createdTime}:d>\n↪ Rejoint le: <t:${joinedTime}:d>\n↪ Leave Time: <t:${currTime}:d>`,
+          `Vous nous manquerez.\nJ'espère vous revoir\n<:member_left:1221029831358021702> Utilisateur: <@${member.user.id}>\n<:created:1221030941007417344> Créer le: <t:${createdTime}:d>\n<:joined:1221030939279364168> Rejoint le: <t:${joinedTime}:d>\n<:leave_user:1221033308603813958> Leave Time: <t:${currTime}:d>`,
         )
         .setThumbnail(member.user.displayAvatarURL({ dynamic: true }))
         .setTimestamp();

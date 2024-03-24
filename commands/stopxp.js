@@ -9,20 +9,20 @@ const { PermissionFlagsBits } = require("discord.js");
 module.exports = {
   data: new SlashCommandBuilder()
     .setName("togglexp")
-    .setDescription("toggle channel xp ")
+    .setDescription("Activer ou désactiver un salon d'xp")
     .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
 
     .addChannelOption((option) =>
       option
         .setName("channel")
-        .setDescription("Channel whose xp is to be stopped/started")
+        .setDescription("Salon dont l'xp doit être activer/désactiver")
         .setRequired(true),
     ),
 
   async execute(interaction) {
     const channel = await interaction.options.getChannel("channel");
     if (channel.type != ChannelType.GuildText) {
-      return interaction.reply("Channel is not a Text Channel!");
+      return interaction.reply("Le salon n'est pas un canal de texte !");
     }
     const data = await createChannelDb(channel.id, 5);
     if (data.earnxp) {
@@ -30,13 +30,13 @@ module.exports = {
         where: { channelId: channel.id },
         data: { earnxp: false },
       });
-      interaction.reply(`Successfully disabled XP from <#${channel.id}> ✅`);
+      interaction.reply(`Dans le salon <#${channel.id}> l'xp est désactiver ✅`);
     } else {
       await client.channelXP.updateMany({
         where: { channelId: channel.id },
         data: { earnxp: true },
       });
-      interaction.reply(`Successfully enabled XP from <#${channel.id}> ✅`);
+      interaction.reply(`Dans le salon <#${channel.id}> l'xp est activer ✅`);
     }
   },
 };

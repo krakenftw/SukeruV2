@@ -7,72 +7,72 @@ const { PermissionFlagsBits } = require("discord.js");
 module.exports = {
   data: new SlashCommandBuilder()
     .setName("adminxp")
-    .setDescription("Manage/Reset XP!")
+    .setDescription("Gestion/réinitialisation d'XP !")
     .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
 
     .addSubcommandGroup((subCommandGroup) =>
       subCommandGroup
         .setName("reset")
-        .setDescription("ResetData")
+        .setDescription("Réinitialiser les données")
         .addSubcommand((subcommand) =>
           subcommand
             .setName("user")
-            .setDescription("Reset User Data")
+            .setDescription("Réinitialiser les données de l'utilisateur")
             .addUserOption((option) =>
               option
                 .setName("resetuser")
                 .setRequired(true)
-                .setDescription("User to reset"),
+                .setDescription("Réinitialisation par l'utilisateur"),
             ),
         )
         .addSubcommand((subcommand) =>
-          subcommand.setName("server").setDescription("Reset Server Data"),
+          subcommand.setName("server").setDescription("Réinitialiser les données du serveur"),
         ),
     )
 
     .addSubcommand((subcommand) =>
       subcommand
         .setName("give")
-        .setDescription("Give XP to user")
+        .setDescription("Donner l'XP à l'utilisateur")
         .addUserOption((option) =>
           option
             .setName("user")
-            .setDescription("The user to give XP to")
+            .setDescription("L'utilisateur à qui attribuer l'XP")
             .setRequired(true),
         )
         .addIntegerOption((option) =>
           option
             .setName("xp")
-            .setDescription("The amount of XP to give")
+            .setDescription("La quantité d'XP à donner")
             .setRequired(false),
         )
         .addIntegerOption((option) =>
           option
             .setName("level")
-            .setDescription("Change Level")
+            .setDescription("Changement de niveau")
             .setRequired(false),
         ),
     )
     .addSubcommand((subcommand) =>
       subcommand
         .setName("remove")
-        .setDescription("Remove XP from user")
+        .setDescription("Supprimer l'XP de l'utilisateur")
         .addUserOption((option) =>
           option
             .setName("user")
-            .setDescription("The user to remove XP from")
+            .setDescription("L'utilisateur à qui il faut retirer l'XP")
             .setRequired(true),
         )
         .addIntegerOption((option) =>
           option
             .setName("xp")
-            .setDescription("The amount of XP to remove")
+            .setDescription("La quantité de l'XP à supprimer")
             .setRequired(false),
         )
         .addIntegerOption((option) =>
           option
             .setName("level")
-            .setDescription("Change Level")
+            .setDescription("Changement de niveau")
             .setRequired(false),
         ),
     ),
@@ -84,7 +84,7 @@ module.exports = {
     if (subCommand == "server") {
       await client.user.updateMany({ data: { level: 0, xp: 0 } });
       return interaction.reply(
-        "successfully resetted XP and Level of all users in server!",
+        "réinitialisation réussie de l'XP et du niveau de tous les utilisateurs du serveur !",
       );
     }
     if (subCommand == "user") {
@@ -94,12 +94,12 @@ module.exports = {
         data: { level: 0, xp: 0 },
       });
       return interaction.reply(
-        `successfully resetted XP and Level ${resetUser.username} in server!`,
+        `réinitialisation réussie de l'XP et du niveau de **${resetUser.username}** dans le serveur !`,
       );
     }
     if (xp == null && level == null) {
       return interaction.reply(
-        "XP and/or Level Not provided. Need atleast one to run the command!",
+        "XP et/ou niveau non fournis. Il en faut au moins un pour exécuter la commande !",
       );
     }
 
@@ -133,13 +133,13 @@ module.exports = {
         });
 
         const embed = new EmbedBuilder()
-          .setTitle("XP Given Successfully")
+          .setTitle("XP donner avec succès")
           .setDescription(
-            `${xp ? xp : 0} xp and ${
+            `**${xp ? xp : 0}** xp et **${
               level ? level : 0
-            } level has been added to <@${
+            }** a été ajouté à <@${
               user.id
-            }> 's account\nHe is now level ${updatedLevel} with ${updatedxp} xp!`,
+            }> \nIl est maintenant au niveau **${updatedLevel}** avec **${updatedxp}** xp!`,
           )
           .setColor("#00ff00")
           .setTimestamp();
@@ -147,7 +147,7 @@ module.exports = {
         await interaction.reply({ embeds: [embed] });
       } catch (error) {
         console.error(error);
-        await interaction.reply("An error occurred while giving XP.");
+        await interaction.reply("Une erreur s'est produite lors de l'attribution d'XP.");
       }
     } else if (subCommand == "remove") {
       try {
@@ -155,12 +155,12 @@ module.exports = {
           where: { userId: user.id },
         });
         if (!userData) {
-          return await interaction.reply("User data not found.");
+          return await interaction.reply("Données utilisateur introuvables.");
         }
 
         if (userData.xp < xp) {
           return await interaction.reply(
-            "User does not have enough XP to remove.",
+            "L'utilisateur n'a pas assez de XP pour procéder à la suppression.",
           );
         }
         let updatedXp = userData.xp;
@@ -178,21 +178,21 @@ module.exports = {
         });
 
         const embed = new EmbedBuilder()
-          .setTitle(`${user.username} XP Removed`)
+          .setTitle(`XP supprimé`)
           .setColor("#ff0000")
           .setDescription(
-            `${xp ? xp : 0} xp and ${
+            `${xp ? xp : 0} xp et ${
               level ? level : 0
-            } level has been removed from <@${
+            } niveau a été supprimé de <@${
               user.id
-            }> 's account\nHe is now level ${updatedLevel} with ${updatedXp} xp!`,
+            }> \nIl est maintenant au niveau ${updatedLevel} avec ${updatedXp} xp!`,
           )
           .setTimestamp();
 
         await interaction.reply({ embeds: [embed] });
       } catch (error) {
         console.error(error);
-        await interaction.reply("An error occurred while removing XP.");
+        await interaction.reply("Une erreur s'est produite lors de la suppression de XP.");
       }
     }
   },

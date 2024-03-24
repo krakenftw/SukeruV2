@@ -5,7 +5,7 @@ const { EmbedBuilder } = require("discord.js");
 module.exports = {
   data: new SlashCommandBuilder()
     .setName("leaderboard")
-    .setDescription("Display the leaderboard of top users by level"),
+    .setDescription("Afficher le classement des meilleurs utilisateurs par niveau"),
   async execute(interaction) {
     try {
       const topUsers = await client.user.findMany({
@@ -14,7 +14,7 @@ module.exports = {
       });
 
       const embed = new EmbedBuilder()
-        .setTitle("Leaderboard - Top Users by Level")
+        .setTitle("Classement - Meilleurs utilisateurs par niveau")
         .setColor("#ff9900")
         .setTimestamp();
       let description = "";
@@ -23,14 +23,14 @@ module.exports = {
       for (let i = 0; i < topUsers.length; i++) {
         const user = topUsers[i];
         const medal = i < 3 ? medalEmojis[i] : "🎖️"; // Assign medal emojis to top 3 users
-        description += `${medal} <@${user.userId}>\n‎ ‎ ‎ ‎ ↠  Level ${user.level} ( ${user.xp} )\n`;
+        description += `${medal} <@${user.userId}>\n‎ ‎ ‎ ‎ ➥  Level ${user.level} ( ${user.xp} )\n`;
       }
       embed.setDescription(description);
       await interaction.reply({ embeds: [embed] });
     } catch (error) {
       console.error(error);
       await interaction.reply(
-        "An error occurred while fetching the leaderboard.",
+        "Une erreur s'est produite lors de l'extraction du classement.",
       );
     }
   },

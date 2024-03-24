@@ -2,7 +2,6 @@ const { Events } = require("discord.js");
 const Discord = require("discord.js");
 const { EmbedBuilder, quote } = require("discord.js");
 const client = require("../lib/db");
-const { DateTime } = require("luxon");
 const { createUserDb } = require("../lib/user");
 
 module.exports = {
@@ -36,9 +35,9 @@ module.exports = {
 
     const embed = new EmbedBuilder()
       .setColor("#0099ff")
-      .setTitle(`Welcome to the server, ${member.user.tag}!`)
+      .setTitle(`Bienvenue sur le serveur, ${member.user.tag}!`)
       .setDescription(
-        `We are glad to have you with us.\n↪ User Name: <@${member.user.id}>\n↪ Created On: <t:${createdTime}:d>\n↪ Joined On: <t:${joinedTime}:d>\n`,
+        `Nous sommes heureux de vous compter parmi nous.\n<:member_join:1221029829780967474> Utilisateur: <@${member.user.id}>\n<:created:1221030941007417344> Date de création: <t:${createdTime}:d>\n<:joined:1221030939279364168> Rejoint le: <t:${joinedTime}:d>\n`,
       )
       .setThumbnail(member.user.displayAvatarURL({ dynamic: true }))
       .setTimestamp();

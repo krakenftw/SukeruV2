@@ -7,13 +7,13 @@ const { PermissionFlagsBits } = require("discord.js");
 module.exports = {
   data: new SlashCommandBuilder()
     .setName("changexp")
-    .setDescription("Change message xp of channel")
+    .setDescription("Modifier le message xp du salon")
     .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
 
     .addChannelOption((option) =>
       option
         .setName("channel")
-        .setDescription("Channel whose xp is to be changed")
+        .setDescription("Salon dont l'xp doit être modifié")
         .setRequired(true),
     )
     .addIntegerOption((option) =>
@@ -25,7 +25,7 @@ module.exports = {
     const xp = await interaction.options.getInteger("xp");
     try {
       if (channel.type != ChannelType.GuildText) {
-        return interaction.reply("‼️ Given channel is not a text channel.");
+        return interaction.reply("Le salon donné n'est pas un salon de texte.");
       }
       const data = await client.channelXP.findFirst({
         where: { channelId: channel.id },
@@ -39,7 +39,7 @@ module.exports = {
         });
       }
       interaction.reply(
-        `Successfully updated <#${channel.id}> 's message XP to ${xp}`,
+        `Mise à jour réussie <#${channel.id}> Le message d'XP à **${xp}**`,
       );
     } catch (err) {
       console.log(err);

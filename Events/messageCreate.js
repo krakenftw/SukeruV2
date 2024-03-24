@@ -47,19 +47,6 @@ module.exports = {
 
       if (user.lastUpdated == null) {
         let level = getLevel(user.xp + channelXp.xp);
-        if (level != user.level) {
-          const embed = new EmbedBuilder()
-            .setTitle(`${message.author.username} Level Updated`)
-            .setColor(15844367)
-            .setDescription(
-              `↪ User: <@${
-                message.author.id
-              }>\n↪ Level: **${level}**\n↪ XP: ${user.xp + channelXp.xp}\n`,
-            )
-            .setTimestamp();
-          channel.send({ embeds: [embed] });
-        }
-
         const f = await client.user.update({
           where: { id: user.id },
           data: {
@@ -76,12 +63,10 @@ module.exports = {
         let level = getLevel(user.xp + channelXp.xp);
         if (level != user.level) {
           const embed = new EmbedBuilder()
-            .setTitle(`${message.author.username} Level Updated`)
+            .setTitle(`Niveau supérieur`)
             .setColor(15844367)
             .setDescription(
-              `↪ User: <@${
-                message.author.id
-              }>\n↪ Level: **${level}**\n↪ XP: ${user.xp + channelXp.xp}`,
+              `**Félicitations <@${message.author.id}>, tu as atteint le niveau** \`${level}\``,
             )
             .setTimestamp()
             .setThumbnail(message.author.displayAvatarURL());
@@ -121,17 +106,17 @@ module.exports = {
 
 function getSpecialMessage(level, userId) {
   const specialMessages = {
-    3: `<@${userId}>, Congratulations! You've reached level 3!`,
-    9: `<@${userId}>, You're now at level 9! Great job!`,
-    18: `<@${userId}>, Level 18 achieved! Keep it up!`,
-    30: `<@${userId}>, Level 30 unlocked! You're doing amazing!`,
-    45: `<@${userId}>, Wow! You've hit level 45! Keep going!`,
-    63: `<@${userId}>, Incredible! Level 63 achieved!`,
-    84: `<@${userId}>, Level 84 reached! You're unstoppable!`,
-    108: `<@${userId}>, You've reached level 108! Amazing progress!`,
-    135: `<@${userId}>, Level 135 unlocked! You're getting stronger!`,
-    165: `<@${userId}>, Congratulations on reaching level 165!`,
-    200: `<@${userId}>, You've reached the highest level possible - Level 200! You're a legend!`,
+    3: `<@${userId}>, **Vous êtes enfin prêt pour passer au rang supérieur** \`Caporal\``,
+    9: `<@${userId}>, **Vous êtes enfin prêt pour passer au rang supérieur** \`Sergent\``,
+    18: `<@${userId}>, **Vous êtes enfin prêt pour passer au rang supérieur** \`Adjudant\``,
+    30: `<@${userId}>, **Vous êtes enfin prêt pour passer au rang supérieur** \`Major\``,
+    45: `<@${userId}>, **Vous êtes enfin prêt pour passer au rang supérieur** \`Aspirant\``,
+    63: `<@${userId}>, **Vous êtes enfin prêt pour passer au rang supérieur** \`Sous-lieutenant\``,
+    84: `<@${userId}>, **Vous êtes enfin prêt pour passer au rang supérieur** \`Lieutenant\``,
+    108: `<@${userId}>, **Vous êtes enfin prêt pour passer au rang supérieur** \`Capitaine\``,
+    135: `<@${userId}>, **Vous êtes enfin prêt pour passer au rang supérieur** \`Commandant\``,
+    165: `<@${userId}>, **Vous êtes enfin prêt pour passer au rang supérieur** \`Lieutenant-Colonel\``,
+    200: `<@${userId}>, **Vous êtes enfin prêt pour passer au rang supérieur** \`Colonel\``,
   };
 
   return specialMessages[level] || "";

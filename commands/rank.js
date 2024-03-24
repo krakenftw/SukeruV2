@@ -8,11 +8,11 @@ const { isInternalDeclaration } = require("typescript");
 module.exports = {
   data: new SlashCommandBuilder()
     .setName("rank")
-    .setDescription("Get your rank info!")
+    .setDescription("Permet d'avoir des informations sur l'utilisateur")
     .addUserOption((user) =>
       user
         .setName("user")
-        .setDescription("target user for rank")
+        .setDescription("L'utilisateur à afficher")
         .setRequired(false),
     ),
   async execute(interaction) {
@@ -63,19 +63,19 @@ module.exports = {
       }
       const embed = new EmbedBuilder()
         .setColor(15418782)
-        .setTitle(`${member.user.username} Rank Info`)
+        .setTitle(`Informations sur l'utilisateur`)
         .setColor(2303786)
         .setDescription(
-          `↪ User: <@${
+          `<:member02:1221030298947420200> **Utilisateur:** <@${
             member.user.id
-          }>\n↪ Rank In Server: **${userIndex}**\n↪ Level: **${
+          }>\n<:trophy01:1221029823334580264> **Classement dans le serveur:** \`${userIndex}\`\n<:level:1221029827893657650> **Niveau:** \`${
             user.level
-          }**\n↪ Total XP : **${
+          }\`\n<:xp:1221032646767808553> **Nombre total d'XP:** \`${
             user.xp
-          }**\n↪ User Roles : ${userRoles}\n↪ Created At: <t:${createdTimeDiscord}:D>\n↪ Joined Server: <t:${joinedTime}:D>\n${
-            firstMessage ? hyperlink("📎 First Message", firstMessage) : ""
+          }\`\n<:role:1221030937203048578> **Rôles:** ${userRoles}\n<:created:1221030941007417344> **Date de création du compte:** <t:${createdTimeDiscord}:D>\n<:joined2:1221030939279364168> **Date d'arrivé:** <t:${joinedTime}:D>\n${
+            firstMessage ? hyperlink("<:iconlink:1221029826337701948> Premier message", firstMessage) : ""
           } \n${
-            secondMessage ? hyperlink("📎 Second Message", secondMessage) : ""
+            secondMessage ? hyperlink("<:iconlink:1221029826337701948> Deuxième message", secondMessage) : ""
           }`,
         )
         .setTimestamp();

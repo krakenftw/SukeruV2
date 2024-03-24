@@ -16,7 +16,8 @@
     "canvas-senpai": "^2.0.3",
     "discord.js": "^14.14.1",
     "dotenv": "^16.4.5",
-    "luxon": "^3.4.4"
+    "luxon": "^3.4.4",
+    "typescript": "^5.4.3"
   },
   "devDependencies": {
     "prisma": "^5.11.0"
