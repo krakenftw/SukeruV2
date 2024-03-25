@@ -31,7 +31,7 @@ module.exports = {
         where: { channelId: channel.id },
       });
       if (!data) {
-        await createChannelDb(channel.id, xp, 18);
+        await createChannelDb(channel.id, xp, process.env.XP_COOLDOWN);
       } else {
         await client.channelXP.updateMany({
           where: { channelId: channel.id },

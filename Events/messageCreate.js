@@ -24,7 +24,11 @@ module.exports = {
       process.env.LEVELS_CHANNEL,
     );
     try {
-      const channelXp = await createChannelDb(message.channel.id, 5, 18);
+      const channelXp = await createChannelDb(
+        message.channel.id,
+        5,
+        process.env.XP_COOLDOWN,
+      );
       const user = await createUserDb(message.author.id);
       if (
         (user.joinMessage == null || user.joinMessage == "") &&
