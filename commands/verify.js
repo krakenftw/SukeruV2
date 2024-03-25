@@ -3,26 +3,6 @@ const client = require("../lib/db");
 const { EmbedBuilder } = require("discord.js");
 const { DateTime } = require("luxon");
 
-function formatTimeAgo(milliseconds) {
-  const time = DateTime.fromMillis(Date.now() - milliseconds);
-  const diff = time
-    .diffNow()
-    .shiftTo("hours", "days", "months", "years")
-    .toObject();
-  console.log(diff);
-  if (Math.abs(diff.years) >= 1) {
-    return Math.abs(diff.years).toFixed(0) + " years ago";
-  } else if (Math.abs(diff.months) >= 1) {
-    return Math.abs(diff.months).toFixed(0) + " months ago";
-  } else if (Math.abs(diff.days) >= 1) {
-    return Math.abs(diff.days).toFixed(0) + " days ago";
-  } else if (Math.abs(diff.hours) >= 1) {
-    return Math.abs(diff.hours).toFixed(0) + " hours ago";
-  } else {
-    return "Just now";
-  }
-}
-
 module.exports = {
   data: new SlashCommandBuilder()
     .setName("verify")
@@ -48,4 +28,3 @@ module.exports = {
     interaction.reply({ embeds: [embed] });
   },
 };
-

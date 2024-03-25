@@ -1,7 +1,12 @@
 const { Events } = require("discord.js");
 const { DateTime } = require("luxon");
 const client = require("../lib/db");
-const { getLevel, createUserDb, createChannelDb } = require("../lib/user");
+const {
+  getLevel,
+  createUserDb,
+  createChannelDb,
+  createMessageData,
+} = require("../lib/user");
 const { EmbedBuilder } = require("discord.js");
 
 const COOLDOWN_DURATION_HOURS = process.env.XP_COOLDOWN;
@@ -19,7 +24,7 @@ module.exports = {
       process.env.LEVELS_CHANNEL,
     );
     try {
-      const channelXp = await createChannelDb(message.channel.id, 5);
+      const channelXp = await createChannelDb(message.channel.id, 5, 18);
       const user = await createUserDb(message.author.id);
       if (
         (user.joinMessage == null || user.joinMessage == "") &&
@@ -40,61 +45,69 @@ module.exports = {
           data: { joinMessageTwo: message.id },
         });
       }
-      console.log(channelXp.earnxp);
       if (!channelXp.earnxp) {
         return;
       }
 
-      if (user.lastUpdated == null) {
-        let level = getLevel(user.xp + channelXp.xp);
-        const f = await client.user.update({
-          where: { id: user.id },
-          data: {
-            xp: user.xp + channelXp.xp,
-            level: level,
-            lastUpdated: date.toMillis().toString(),
-          },
-        });
+      const data = await client.lastMessage.findFirst({
+        where: { channelId: message.channel.id, userId: message.author.id },
+      });
+
+      console.log(await client.lastMessage.findMany());
+
+      if (data) {
+        const time = DateTime.fromMillis(parseInt(data.time));
+        const diff = date.diff(time, ["hours"]);
+        if (diff.hours >= channelXp.cooldown) {
+          updateData(data, date, user, channelXp, message);
+        }
+      } else {
+        createMessageData(
+          message.channel.id,
+          message.author.id,
+          date.toMillis(),
+        );
+        updateData(data, date, user, channelXp);
       }
 
-      const lastMessage = DateTime.fromMillis(parseInt(user.lastUpdated));
-      const timeElapsed = date.diff(lastMessage, "milliseconds");
-      if (timeElapsed > COOLDOWN_DURATION_MS) {
-        let level = getLevel(user.xp + channelXp.xp);
-        if (level != user.level) {
-          const embed = new EmbedBuilder()
-            .setTitle(`Niveau supérieur`)
-            .setColor(15844367)
-            .setDescription(
-              `**Félicitations <@${message.author.id}>, tu as atteint le niveau** \`${level}\``,
-            )
-            .setTimestamp()
-            .setThumbnail(message.author.displayAvatarURL());
-          channel.send({ embeds: [embed] });
-        }
-
-        if (specialLevels.includes(level) && user.level != level) {
-          const specialChannel = await message.guild.channels.cache.get(
-            process.env.SPECIAL_LEVELS_CHANNEL,
-          );
-          if (!specialChannel) {
-            return;
-          }
-          const specialMessage = getSpecialMessage(level, message.author.id);
-          specialChannel.send(specialMessage);
-        }
-
-        const f = await client.user.update({
-          where: { id: user.id },
-          data: {
-            xp: user.xp + channelXp.xp,
-            level: level,
-            lastUpdated: date.toMillis().toString(),
-          },
-        });
-      }
-
-      const d = await client.user.update({
+      //   const lastMessage = DateTime.fromMillis(parseInt(user.lastUpdated));
+      //   const timeElapsed = date.diff(lastMessage, "milliseconds");
+      //   if (timeElapsed > COOLDOWN_DURATION_MS) {
+      //     let level = getLevel(user.xp + channelXp.xp);
+      //     if (level != user.level) {
+      //       const embed = new EmbedBuilder()
+      //         .setTitle(`Niveau supérieur`)
+      //         .setColor(15844367)
+      //         .setDescription(
+      //           `**Félicitations <@${message.author.id}>, tu as atteint le niveau** \`${level}\``,
+      //         )
+      //         .setTimestamp()
+      //         .setThumbnail(message.author.displayAvatarURL());
+      //       channel.send({ embeds: [embed] });
+      //     }
+      //
+      //     if (specialLevels.includes(level) && user.level != level) {
+      //       const specialChannel = await message.guild.channels.cache.get(
+      //         process.env.SPECIAL_LEVELS_CHANNEL,
+      //       );
+      //       if (!specialChannel) {
+      //         return;
+      //       }
+      //       const specialMessage = getSpecialMessage(level, message.author.id);
+      //       specialChannel.send(specialMessage);
+      //     }
+      //
+      //     const f = await client.user.update({
+      //       where: { id: user.id },
+      //       data: {
+      //         xp: user.xp + channelXp.xp,
+      //         level: level,
+      //         lastUpdated: date.toMillis().toString(),
+      //       },
+      //     });
+      //   }
+      //
+      await client.user.update({
         where: { id: user.id },
         data: { lastMessage: date.toMillis().toString() },
       });
@@ -120,4 +133,30 @@ function getSpecialMessage(level, userId) {
   };
 
   return specialMessages[level] || "";
+}
+
+async function updateData(data, date, user, channelXp, message) {
+  await client.lastMessage.update({
+    where: { id: data.id },
+    data: { time: date.toMillis().toString() },
+  });
+
+  const xp = user.xp + channelXp.xp;
+  const level = getLevel(xp);
+
+  if (specialLevels.includes(level) && user.level != level) {
+    const specialChannel = await message.guild.channels.fetch(
+      process.env.SPECIAL_LEVELS_CHANNEL,
+    );
+    if (!specialChannel) {
+      return;
+    }
+    const specialMessage = getSpecialMessage(level, message.author.id);
+    specialChannel.send(specialMessage);
+  }
+
+  await client.user.update({
+    where: { id: user.id },
+    data: { xp, level },
+  });
 }

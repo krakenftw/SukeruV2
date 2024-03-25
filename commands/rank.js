@@ -24,7 +24,6 @@ module.exports = {
       member = await interaction.guild.members.fetch(interaction.user.id);
     }
     const userId = member.user.id;
-    console.log(userId);
 
     let user = await client.user.findFirst({
       where: { userId: userId },
@@ -73,9 +72,19 @@ module.exports = {
           }\`\n<:xp:1221032646767808553> **Nombre total d'XP:** \`${
             user.xp
           }\`\n<:role:1221030937203048578> **Rôles:** ${userRoles}\n<:created:1221030941007417344> **Date de création du compte:** <t:${createdTimeDiscord}:D>\n<:joined2:1221030939279364168> **Date d'arrivé:** <t:${joinedTime}:D>\n${
-            firstMessage ? hyperlink("<:iconlink:1221029826337701948> Premier message", firstMessage) : ""
+            firstMessage
+              ? hyperlink(
+                  "<:iconlink:1221029826337701948> Premier message",
+                  firstMessage,
+                )
+              : ""
           } \n${
-            secondMessage ? hyperlink("<:iconlink:1221029826337701948> Deuxième message", secondMessage) : ""
+            secondMessage
+              ? hyperlink(
+                  "<:iconlink:1221029826337701948> Deuxième message",
+                  secondMessage,
+                )
+              : ""
           }`,
         )
         .setTimestamp();

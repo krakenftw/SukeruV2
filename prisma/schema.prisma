@@ -19,7 +19,6 @@ model User{
   joinMessage String?
   joinMessageTwo String?
   lastMessage String?
-  lastUpdated String?
   joined DateTime?
   xp Int @default(0)
   level Int @default(1)
@@ -27,6 +26,14 @@ model User{
 model ChannelXP{
     id Int @id @default(autoincrement())
     channelId String
+    cooldown Int @default(18)
     xp Int? 
     earnxp Boolean
   }
+
+  model lastMessage{
+      id Int @id @default(autoincrement())
+      channelId String
+      userId String
+      time String
+    }

@@ -20,7 +20,6 @@ module.exports = {
       const data = await client.user.findFirst({
         where: { userId: member.user.id },
       });
-      console.log("Data ", data);
       if (!data) {
         createUserDb(member.user.id);
       }

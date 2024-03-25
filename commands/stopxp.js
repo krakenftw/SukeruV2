@@ -24,13 +24,15 @@ module.exports = {
     if (channel.type != ChannelType.GuildText) {
       return interaction.reply("Le salon n'est pas un canal de texte !");
     }
-    const data = await createChannelDb(channel.id, 5);
+    const data = await createChannelDb(channel.id, 5, 18);
     if (data.earnxp) {
       await client.channelXP.updateMany({
         where: { channelId: channel.id },
         data: { earnxp: false },
       });
-      interaction.reply(`Dans le salon <#${channel.id}> l'xp est désactiver ✅`);
+      interaction.reply(
+        `Dans le salon <#${channel.id}> l'xp est désactiver ✅`,
+      );
     } else {
       await client.channelXP.updateMany({
         where: { channelId: channel.id },
