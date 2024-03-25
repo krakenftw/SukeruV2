@@ -27,7 +27,7 @@ module.exports = {
       const channelXp = await createChannelDb(
         message.channel.id,
         5,
-        process.env.XP_COOLDOWN,
+        parseInt(process.env.XP_COOLDOWN),
       );
       const user = await createUserDb(message.author.id);
       if (
@@ -57,21 +57,20 @@ module.exports = {
         where: { channelId: message.channel.id, userId: message.author.id },
       });
 
-      console.log(await client.lastMessage.findMany());
-
       if (data) {
         const time = DateTime.fromMillis(parseInt(data.time));
         const diff = date.diff(time, ["hours"]);
         if (diff.hours >= channelXp.cooldown) {
-          updateData(data, date, user, channelXp, message);
+          await updateData(data, date, user, channelXp, message);
         }
       } else {
-        createMessageData(
+        console.log("here");
+        await createMessageData(
           message.channel.id,
           message.author.id,
           date.toMillis(),
         );
-        updateData(data, date, user, channelXp);
+        await updateData(data, date, user, channelXp);
       }
 
       //   const lastMessage = DateTime.fromMillis(parseInt(user.lastUpdated));
@@ -140,11 +139,12 @@ function getSpecialMessage(level, userId) {
 }
 
 async function updateData(data, date, user, channelXp, message) {
-  await client.lastMessage.update({
-    where: { id: data.id },
-    data: { time: date.toMillis().toString() },
-  });
-
+  if (data) {
+    await client.lastMessage.update({
+      where: { id: data.id },
+      data: { time: date.toMillis().toString() },
+    });
+  }
   const xp = user.xp + channelXp.xp;
   const level = getLevel(xp);
 

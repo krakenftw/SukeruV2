@@ -24,7 +24,11 @@ module.exports = {
     if (channel.type != ChannelType.GuildText) {
       return interaction.reply("Le salon n'est pas un canal de texte !");
     }
-    const data = await createChannelDb(channel.id, 5, process.env.XP_COOLDOWN);
+    const data = await createChannelDb(
+      channel.id,
+      5,
+      parseInt(process.env.XP_COOLDOWN),
+    );
     if (data.earnxp) {
       await client.channelXP.updateMany({
         where: { channelId: channel.id },
