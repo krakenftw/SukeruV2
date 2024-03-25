@@ -5,11 +5,13 @@ const { EmbedBuilder } = require("discord.js");
 module.exports = {
   data: new SlashCommandBuilder()
     .setName("leaderboard")
-    .setDescription("Afficher le classement des meilleurs utilisateurs par niveau"),
+    .setDescription(
+      "Afficher le classement des meilleurs utilisateurs par niveau",
+    ),
   async execute(interaction) {
     try {
       const topUsers = await client.user.findMany({
-        orderBy: { level: "desc" },
+        orderBy: { xp: "desc" },
         take: 15,
       });
 
