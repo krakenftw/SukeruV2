@@ -147,6 +147,20 @@ async function updateData(data, date, user, channelXp, message) {
   }
   const xp = user.xp + channelXp.xp;
   const level = getLevel(xp);
+  if (level != user.level) {
+    const levelsChannel = await message.guild.channels.fetch(
+      process.env.LEVELS_CHANNEL,
+    );
+    const embed = new EmbedBuilder()
+      .setTitle(`Niveau supérieur`)
+      .setColor(15844367)
+      .setDescription(
+        `**Félicitations <@${message.author.id}>, tu as atteint le niveau** \`${level}\``,
+      )
+      .setTimestamp()
+      .setThumbnail(message.author.displayAvatarURL());
+    levelsChannel.send({ embeds: [embed] });
+  }
 
   if (specialLevels.includes(level) && user.level != level) {
     const specialChannel = await message.guild.channels.fetch(
